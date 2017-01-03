@@ -18,6 +18,7 @@ from .status import Status, StatusCls
 import digits.log
 from digits.extensions.cluster_management import cluster_factory
 # from digits.extensions.cluster_management.slurm import pack_slurm_args
+
 # NOTE: Increment this every time the pickled version changes
 PICKLE_VERSION = 1
 
