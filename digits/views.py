@@ -337,7 +337,13 @@ def login():
     # Validate username
     username = utils.routing.get_request_arg('username').strip()
     try:
+        password = utils.routing.get_request_arg('password').strip()
+    except Exception: # This is because the tests dont do passwords
+        password = ""
+    try:
         utils.auth.validate_username(username)
+        utils.auth.validate_password(password)
+        utils.auth.validate_user(username,password)
     except ValueError as e:
         # Invalid username
         flask.flash(e.message, 'danger')

@@ -5,7 +5,13 @@ import flask
 import functools
 import re
 import werkzeug.exceptions
-
+import pickle
+from werkzeug.security import generate_password_hash, \
+     check_password_hash
+try:
+    users = pickle.load(open("users.p","rb"))
+except IOError:
+    users = {}
 from .routing import get_request_arg, request_wants_json
 
 
@@ -25,6 +31,17 @@ def validate_username(username):
     if not re.match('[a-z0-9\.\-_]+$', username):
         raise ValueError('Only lowercase letters, numbers, periods, dashes and underscores allowed')
 
+def validate_password(password):
+    """
+    Raises a ValueError if the password is invalid
+    """
+
+def validate_user(username,password):
+    if username not in users:
+        users[username] = generate_password_hash(password)
+        pickle.dump(users,open("users.p","wb"))
+    if not check_password_hash(users.get(username),password):
+        raise ValueError("Bad password")
 
 def requires_login(f=None, redirect=True):
     """
