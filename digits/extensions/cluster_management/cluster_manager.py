@@ -1,4 +1,5 @@
-class cluster_manger:
+class cluster_manager:
+
     def __init__(self):
         pass
 
