@@ -318,6 +318,7 @@ def group():
 
     return 'Jobs regrouped.'
 
+
 # Authentication/login
 
 
@@ -611,6 +612,7 @@ def clone_job(clone):
     else:
         raise werkzeug.exceptions.BadRequest('Invalid job type')
 
+
 # Error handling
 
 
@@ -648,11 +650,13 @@ def handle_error(e):
                                      trace=trace,
                                      ), status_code
 
+
 # Register this handler for all error codes
 # Necessary for flask<=0.10.1
 for code in HTTP_STATUS_CODES:
     if code not in [301]:
         app.register_error_handler(code, handle_error)
+
 
 # File serving
 
@@ -667,6 +671,7 @@ def serve_file(path):
     """
     jobs_dir = config_value('jobs_dir')
     return flask.send_from_directory(jobs_dir, path)
+
 
 # Path Completion
 
@@ -717,6 +722,7 @@ def extension_static(extension_type, extension_id, filename):
     rootdir = os.path.join(digits_root, *['extensions', 'view', extension.get_dirname(), 'static'])
     return flask.send_from_directory(rootdir, filename)
 
+
 # SocketIO functions
 
 # /home
@@ -736,6 +742,7 @@ def on_disconnect_home():
     Somebody disconnected from the homepage
     """
     pass
+
 
 # /jobs
 
@@ -776,6 +783,7 @@ def on_leave_jobs():
         del flask.session['room']
         # print '>>> Somebody left room %s' % room
         leave_room(room)
+
 
 @blueprint.route('/system/<system_type>')
 def change_system_type(system_type):
