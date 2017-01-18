@@ -7,9 +7,22 @@ import re
 import werkzeug.exceptions
 import pickle
 from werkzeug.security import generate_password_hash, \
-     check_password_hash
+    check_password_hash
+import os
+import tempfile
+import digits
+if 'DIGITS_MODE_TEST' in os.environ:
+    value = tempfile.mkdtemp()
+elif 'DIGITS_JOBS_DIR' in os.environ:
+    value = os.environ['DIGITS_JOBS_DIR']
+    value += "/../"
+else:
+    value = os.path.join(os.path.dirname(digits.__file__))+'/'
+    print(value)
+
+save_dir = value
 try:
-    users = pickle.load(open("users.p","rb"))
+    users = pickle.load(open(save_dir + "users.p", "rb"))
 except IOError:
     users = {}
 from .routing import get_request_arg, request_wants_json
@@ -17,7 +30,7 @@ from .routing import get_request_arg, request_wants_json
 
 def get_username():
     return get_request_arg('username') or \
-        flask.request.cookies.get('username', None)
+           flask.request.cookies.get('username', None)
 
 
 def validate_username(username):
@@ -31,17 +44,20 @@ def validate_username(username):
     if not re.match('[a-z0-9\.\-_]+$', username):
         raise ValueError('Only lowercase letters, numbers, periods, dashes and underscores allowed')
 
+
 def validate_password(password):
     """
     Raises a ValueError if the password is invalid
     """
 
-def validate_user(username,password):
+
+def validate_user(username, password):
     if username not in users:
         users[username] = generate_password_hash(password)
-        pickle.dump(users,open("users.p","wb"))
-    if not check_password_hash(users.get(username),password):
+        pickle.dump(users, open(save_dir + "users.p", "wb"))
+    if not check_password_hash(users.get(username), password):
         raise ValueError("Bad password")
+
 
 def requires_login(f=None, redirect=True):
     """
@@ -70,6 +86,7 @@ def requires_login(f=None, redirect=True):
         except ValueError as e:
             raise werkzeug.exceptions.BadRequest('Invalid username - %s' % e.message)
         return f(*args, **kwargs)
+
     return decorated
 
 
