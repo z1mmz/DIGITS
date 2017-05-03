@@ -83,6 +83,7 @@ addons:
         packages:
             - build-essential
             - cmake
+            - doxygen
             - libboost-all-dev
             - cython
             - git
