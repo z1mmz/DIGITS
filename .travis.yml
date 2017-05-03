@@ -77,6 +77,8 @@ cache:
 
 addons:
     apt:
+	sources:
+            - boost-latest
         packages:
             - build-essential
             - cmake
@@ -134,9 +136,4 @@ install:
     - if [ "$WITH_PLUGINS" != "false" ]; then find ./plugins/*/* -maxdepth 0 -type d | xargs -n1 pip install -e; fi
 
 script:
-    - ./digits-test -v
-
-after_failure: 
-     - "cat /home/travis/caffe/build/CMakeFiles/CMakeOutput.log"
-     - "ls"
-#    - "cat /home/travis/caffe/build/CMakeFiles/CMakeError.log"
+    - ./digits-test -vx
