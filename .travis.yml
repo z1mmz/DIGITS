@@ -78,8 +78,7 @@ cache:
 addons:
     apt:
 	sources:
-            - boost-latest
-
+          - boost-latest
         packages:
             - build-essential
             - cmake
