@@ -83,6 +83,7 @@ addons:
         packages:
             - build-essential
             - cmake
+            - libboost-all-dev
             - cython
             - git
             - graphviz
