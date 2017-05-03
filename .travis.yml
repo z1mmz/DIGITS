@@ -79,6 +79,7 @@ addons:
     apt:
 	sources:
             - boost-latest
+
         packages:
             - build-essential
             - cmake
