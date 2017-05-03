@@ -136,5 +136,7 @@ install:
 script:
     - ./digits-test -v
 
-after_failure: "cat /home/travis/caffe/build/CMakeFiles/CMakeOutput.log"
+after_failure: 
+     - "cat /home/travis/caffe/build/CMakeFiles/CMakeOutput.log"
+     - "ls"
 #    - "cat /home/travis/caffe/build/CMakeFiles/CMakeError.log"
