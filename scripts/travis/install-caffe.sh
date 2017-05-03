@@ -40,3 +40,4 @@ make --jobs="$(nproc)"
 WEEK=$(date +%Y-%W)
 echo "$WEEK" > "${INSTALL_DIR}/cache-version.txt"
 
+cat /home/travis/caffe/build/CMakeFiles/CMakeOutput.log
