@@ -86,7 +86,7 @@ addons:
             - cython
             - git
             - graphviz
-            - libboost1.55-all-dev
+            - libboost1.55-dev
             - libboost-filesystem-dev
             - libboost-python-dev
             - libboost-system-dev
