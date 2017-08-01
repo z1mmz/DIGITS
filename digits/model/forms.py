@@ -16,6 +16,7 @@ from digits import frameworks
 
 
 class ModelForm(Form):
+
     # Methods
 
     def selection_exists_in_choices(form, field):
@@ -120,6 +121,15 @@ class ModelForm(Form):
         tooltip="How many epochs of training between running through one pass of the validation data?"
     )
 
+    traces_interval = utils.forms.IntegerField(
+        'Tracing Interval (in steps)',
+        validators=[
+            validators.NumberRange(min=0)
+        ],
+        default=0,
+        tooltip="Generation of a timeline trace every few steps"
+    )
+
     random_seed = utils.forms.IntegerField(
         'Random seed',
         validators=[
@@ -154,12 +164,15 @@ class ModelForm(Form):
     solver_type = utils.forms.SelectField(
         'Solver type',
         choices=[
-            ('SGD', 'Stochastic gradient descent (SGD)'),
-            ('NESTEROV', "Nesterov's accelerated gradient (NAG)"),
-            ('ADAGRAD', 'Adaptive gradient (AdaGrad)'),
-            ('RMSPROP', 'RMSprop'),
+            ('SGD', 'SGD (Stochastic Gradient Descent)'),
+            ('MOMENTUM', 'Momentum'),
+            ('NESTEROV', "NAG (Nesterov's accelerated gradient)"),
+            ('ADAGRAD', 'AdaGrad (Adaptive Gradient)'),
+            ('ADAGRADDA', 'AdaGradDA (AdaGrad Dual Averaging)'),
             ('ADADELTA', 'AdaDelta'),
-            ('ADAM', 'Adam'),
+            ('ADAM', 'Adam (Adaptive Moment Estimation)'),
+            ('RMSPROP', 'RMSprop'),
+            ('FTRL', 'FTRL (Follow-The-Regularized-Leader)'),
         ],
         default='SGD',
         tooltip="What type of solver will be used?",
@@ -299,22 +312,28 @@ class ModelForm(Form):
     )
 
     def validate_custom_network_snapshot(form, field):
-        if form.method.data == 'custom':
-            for filename in field.data.strip().split(os.path.pathsep):
-                if filename and not os.path.exists(filename):
-                    raise validators.ValidationError('File "%s" does not exist' % filename)
+        pass
+#       if form.method.data == 'custom':
+#           for filename in field.data.strip().split(os.path.pathsep):
+#               if filename and not os.path.lexists(filename):
+#                   raise validators.ValidationError('File "%s" does not exist' % filename)
 
     # Select one of several GPUs
     select_gpu = wtforms.RadioField(
         'Select which GPU you would like to use',
-        choices=[('next', 'Next available')] + [(index, '#%s - %s (%s memory)' % (
+        choices=[('next', 'Next available')] + [(
             index,
-            get_device(index).name,
-            sizeof_fmt(
-                get_nvml_info(index)['memory']['total']
-                if get_nvml_info(index) and 'memory' in get_nvml_info(index)
-                else get_device(index).totalGlobalMem)
-        ),) for index in config_value('gpu_list').split(',') if index], default='next', )
+            '#%s - %s (%s memory)' % (
+                index,
+                get_device(index).name,
+                sizeof_fmt(
+                    get_nvml_info(index)['memory']['total']
+                    if get_nvml_info(index) and 'memory' in get_nvml_info(index)
+                    else get_device(index).totalGlobalMem)
+            ),
+        ) for index in config_value('gpu_list').split(',') if index],
+        default='next',
+    )
     # slurm options
     slurm_selector = utils.forms.BooleanField('Use slurm?')
     slurm_time_limit = utils.forms.IntegerField('Task time limit', tooltip='in minutes', default=0, )
@@ -328,13 +347,19 @@ class ModelForm(Form):
     # Select N of several GPUs
     select_gpus = utils.forms.SelectMultipleField(
         'Select which GPU[s] you would like to use',
-        choices=[(index, '#%s - %s (%s memory)' % (
-            index, get_device(index).name,
-            sizeof_fmt(get_nvml_info(index)['memory']['total']
-                       if get_nvml_info(index) and 'memory' in get_nvml_info(index)
-                       else get_device(index).totalGlobalMem)),
-                  ) for index in config_value('gpu_list').split(',') if index],
-        tooltip="The job won't start until all of the chosen GPUs are available.")
+        choices=[(
+            index,
+            '#%s - %s (%s memory)' % (
+                index,
+                get_device(index).name,
+                sizeof_fmt(
+                    get_nvml_info(index)['memory']['total']
+                    if get_nvml_info(index) and 'memory' in get_nvml_info(index)
+                    else get_device(index).totalGlobalMem)
+            ),
+        ) for index in config_value('gpu_list').split(',') if index],
+        tooltip="The job won't start until all of the chosen GPUs are available."
+    )
 
     # XXX For testing
     # The Flask test framework can't handle SelectMultipleFields correctly
@@ -351,7 +376,6 @@ class ModelForm(Form):
                                                   ],
                                                   default=1,
                                                   )
-
     select_gpu_count = wtforms.IntegerField('Use this many GPUs (next available)',
                                             validators=[
                                                 validators.NumberRange(min=1, max=len(

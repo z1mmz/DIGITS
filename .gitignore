@@ -1,6 +1,7 @@
 # Temporary files
 *.swp
 *~
+.DS_Store
 TAGS
 
 # Compiled / optimized files
@@ -60,3 +61,16 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+=======
+#Intellij files
+.idea/
+
+#vscode
+.vscode/
+
+#.project
+.project
+/.project
+
+#.tb
+.tb/
