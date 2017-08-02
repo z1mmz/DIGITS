@@ -742,6 +742,12 @@ setFramework("{{form.framework.data}}");
                 {% endfor %}
             </div>
             {% endif %}
+            {% if system_type != 'interactive'%}
+            <div class="form-group{{mark_errors([form.select_gpu_count])}}">
+                {{form.select_gpu_count.label}}
+                {{form.select_gpu_count(class='form-control')}}
+            </div>
+            {% endif %}
             {% if form.select_gpus.choices| length > 1 and multi_gpu and system_type != 'slurm' %}
             <div class="form-group{{mark_errors([form.select_gpu_count])}}">
                 {{form.select_gpu_count.label}}
