@@ -37,7 +37,13 @@ def main():
     )
 
     args = vars(parser.parse_args())
-
+    if args['port'] == 0:
+        import socket 
+        s=socket.socket()
+        s.bind(("", 0))
+        args['port'] = s.getsockname()[1] 
+        print "PORT="+str(args['port'])+", HOSTNAME="+socket.gethostname()
+        s.close()
     import digits
 
     if args['version']:

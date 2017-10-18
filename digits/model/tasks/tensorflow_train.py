@@ -277,7 +277,8 @@ class TensorflowTrainTask(TrainTask):
             # don't make other GPUs visible though since the process will load
             # CUDA libraries and allocate memory on all visible GPUs by
             # default.
-            env['CUDA_VISIBLE_DEVICES'] = subprocess_visible_devices(identifiers)
+            # TODO Swtich this for interactive systems
+            # env['CUDA_VISIBLE_DEVICES'] = subprocess_visible_devices(identifiers)
 
         if self.pretrained_model:
             args.append('--weights=%s' % self.path(self.pretrained_model))
